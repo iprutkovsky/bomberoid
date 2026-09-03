@@ -86,15 +86,18 @@ const numberOfRows = 13;
 const numberOfColumns = 15;
 
 const cells = Array.from({ length: numberOfRows }, (v, i) => {
-  if (i == 0 || i == numberOfRows - 1) {
-    v = Array.from({ length: numberOfColumns }, () => '▉');
-  }
-  else if (!(i % 2)) {
-    v = Array.from({ length: numberOfColumns }, (_, j) => !(j % 2) ? '▉' : '');
-  }
-  else {
-    v = Array.from({ length: numberOfColumns }, (_, k) => k == 0 || k == numberOfColumns - 1 ? '▉' : '');
-  }
+  switch (true) {
+    case i === 0:
+    case i == numberOfRows - 1:
+      v = Array.from({ length: numberOfColumns }, () => '▉');
+      break;
+    case !(i % 2):
+      v = Array.from({ length: numberOfColumns }, (_, j) => !(j % 2) ? '▉' : '');
+      break;
+    default:
+      v = Array.from({ length: numberOfColumns }, (_, k) => k == 0 || k == numberOfColumns - 1 ? '▉' : '');
+      break;
+  }  
   return v;
 });
 
@@ -102,14 +105,16 @@ const monolith = new Monolith({
   row: 0,
   col: 0,
   position: {
-    x: 0,
-    y: 0
+    x: 128,
+    y: 64
   },
-  imageSrc: './images/tiles.png',
-  scale: .984375,
+  imageSrc: './images/monolith.png',
+  scale: 1,
   framesMax: 1,
-  spriteRow: 6,
-  spriteRowMax: 7
+  spriteRow: 0,
+  spriteRowMax: 1,
+  spritePositions: 2,
+  spritePositionNumber: 0
 });
 
 const offset = {
