@@ -125,17 +125,19 @@ class Explosion extends Sprite {
 }
 
 class Monolith extends Sprite {
-  height = 63;
-  width = 63;
+  height = 64
+  width = 64;
 
-  constructor({ row, col, position, imageSrc, scale, framesMax, spriteRow, spriteRowMax }) {
+  constructor({ row, col, position, imageSrc, scale, framesMax, spriteRow, spriteRowMax, spritePositions, spritePositionNumber, type }) {
     super({
       position,
       imageSrc,
       scale,
       framesMax,
       spriteRow,
-      spriteRowMax
+      spriteRowMax,
+      spritePositions,
+      spritePositionNumber
     });
     this.row = row;
     this.col = col;
@@ -143,6 +145,7 @@ class Monolith extends Sprite {
     this.framesCurrent = 0;
     this.framesElapsed = 0;
     this.framesHold = 45;
+    this.type = type;
   }
 
   update() {
