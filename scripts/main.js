@@ -48,29 +48,34 @@ document.addEventListener('keydown', (e) => {
   let row = player.row;
   let col = player.col;
 
+  // console.log(cells);
   console.log(e.key);
   switch (e.code) {
     case 'KeyW': // Up
       row--;
       keys.w.pressed = true;
+      console.log(cells[row][col], 'current cell', player.position)
       player.idle = false;
       player.spritePositionNumber = 3;
       break;
     case 'KeyS': // Down
       row++;
       keys.s.pressed = true;
+      console.log(cells[row][col], 'current cell', player.position)
       player.idle = false;
       player.spritePositionNumber = 0;
       break;
     case 'KeyA': // Left
       col--;
       keys.a.pressed = true;
+      console.log(cells[row][col], 'current cell', player.position)
       player.idle = false;
       player.spritePositionNumber = 2;
       break;
     case 'KeyD': // Right
       col++;
       keys.d.pressed = true;
+      console.log(cells[row][col], 'current cell', player.position)
       player.idle = false;
       player.spritePositionNumber = 1;
       break;
@@ -138,6 +143,8 @@ function blowUpBomb(bomb) {
   // bomb has already exploded so don't blow up again
   if (!bomb.alive) return;
 
+  console.log(bomb, 'bomb data')
+
   bomb.alive = false;
 
   // remove bomb from the field
@@ -190,6 +197,8 @@ function blowUpBomb(bomb) {
 
 // generate maze
 function generateMazeLayout() {
+
+  console.log(cells);
   for (let row = 1; row < numberOfRows - 1; row++) {
     for (let col = 1; col < numberOfColumns - 1; col++) {
 
@@ -241,7 +250,6 @@ function main(timestamp) {
   });
 
   player.update();
-  // monolith.update();
 
   player.movement.x = 0;
   player.movement.y = 0;
