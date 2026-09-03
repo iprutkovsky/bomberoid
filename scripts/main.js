@@ -2,125 +2,24 @@
 const btn = document.querySelector('#start-game');
 const canvas = document.querySelector('#game-canvas');
 const context = canvas.getContext('2d');
-// [blowUpLength, velocity, quantity of bricks]
-
-const config = {
-  bombsQuantity: 1,
-  speed: .5,
-}
-
-const difficulty = {
-  easy: [5, 2, .45],
-  normal: [5, 3, .5],
-  hard: [7, 4, .6],
-  insane: [9, 5, .75]
-};
-const dirs = [
-  {
-    row: -1, // up
-    col: 0
-  },
-  {
-    row: 1, // down
-    col: 0
-  },
-  {
-    row: 0,
-    col: -1 // left
-  },
-  {
-    row: 0,
-    col: 1 // right
-  }
-];
-let dt;
-let entities = [];
-const keys = {
-  w: {
-    pressed: false
-  },
-  s: {
-    pressed: false
-  },
-  a: {
-    pressed: false
-  },
-  d: {
-    pressed: false
-  }
-};
-let lastTimeStamp;
-let loop;
-const numberOfRows = 13;
-const numberOfColumns = 15;
-const cells = Array.from({ length: numberOfRows }, (v, i) => {
-  if (i == 0 || i == numberOfRows - 1) {
-    v = Array.from({ length: numberOfColumns }, () => '▉');
-  }
-  else if (!(i % 2)) {
-    v = Array.from({ length: numberOfColumns }, (_, j) => !(j % 2) ? '▉' : '');
-  }
-  else {
-    v = Array.from({ length: numberOfColumns }, (_, k) => k == 0 || k == numberOfColumns - 1 ? '▉' : '');
-  }
-  return v;
-});
-
-const monolith = new Monolith({
-  row: 0,
-  col: 0,
-  position: {
-    x: 0,
-    y: 0
-  },
-  imageSrc: './images/tiles.png',
-  scale: .984375,
-  framesMax: 1,
-  spriteRow: 6,
-  spriteRowMax: 7
-});
-
-// const player = new Player(1, 1, config.bombsQuantity, 1);
-const player = new Player({
-  row: 1,
-  col: 1,
-  bombsQuantity: config.bombsQuantity,
-  explosionPower: 1,
-  position: {
-    x: 67,
-    y: 67
-  },
-  imageSrc: './images/player.png',
-  scale: .65,
-  framesMax: 3,
-  spriteRow: 0,
-  spriteRowMax: 8,
-  spritePositions: 4,
-  spritePositionNumber: 1
-});
-const types = {
-  bomb: 2,
-  brickWall: 1,
-  monolith: '▉',
-};
 
 // field size
-canvas.width = grid * numberOfColumns;
-canvas.height = grid * numberOfRows;
+canvas.width = cellSize * numberOfColumns;
+canvas.height = cellSize * numberOfRows;
 
 // canvas for the bricks
 const brickWallCanvas = document.createElement('canvas');
 const brickWallCtx = brickWallCanvas.getContext('2d');
 
-brickWallCanvas.width = grid;
-brickWallCanvas.height = grid;
+brickWallCanvas.width = cellSize;
+brickWallCanvas.height = cellSize;
 
 brickWallCtx.fillStyle = 'grey';
-brickWallCtx.fillRect(0, 0, grid, grid);
+brickWallCtx.fillRect(0, 0, cellSize, cellSize);
 
 // 1st row brick
 brickWallCtx.fillStyle = '#bdbdbd';
-brickWallCtx.fillRect(1, 1, grid - 2, 20);
+brickWallCtx.fillRect(1, 1, cellSize - 2, 20);
 
 // 2nd row bricks
 brickWallCtx.fillRect(0, 23, 20, 18);
@@ -134,17 +33,17 @@ brickWallCtx.fillRect(44, 43, 20, 20);
 const monolithCanvas = document.createElement('canvas');
 const monolithCtx = monolithCanvas.getContext('2d');
 
-monolithCanvas.width = grid;
-monolithCanvas.height = grid;
+monolithCanvas.width = cellSize;
+monolithCanvas.height = cellSize;
 
 monolithCtx.fillStyle = 'grey';
-monolithCtx.fillRect(0, 0, grid, grid);
+monolithCtx.fillRect(0, 0, cellSize, cellSize);
 monolithCtx.fillStyle = '#d6d6d6';
-monolithCtx.fillRect(0, 0, grid - 2, grid - 2);
+monolithCtx.fillRect(0, 0, cellSize - 2, cellSize - 2);
 monolithCtx.fillStyle = '#a9a9a9';
-monolithCtx.fillRect(2, 2, grid - 4, grid - 4);
+monolithCtx.fillRect(2, 2, cellSize - 4, cellSize - 4);
 
-// Functions section
+// -= Movement section =-
 document.addEventListener('keydown', (e) => {
   let row = player.row;
   let col = player.col;
@@ -184,8 +83,8 @@ document.addEventListener('keydown', (e) => {
           size: player.explosionPower,
           owner: player,
           position: {
-            x: grid * (col + 1) + .15 * grid,
-            y: grid * row + .15 * grid
+            x: bombSetPosition(player.position.x) + offset.x,
+            y: bombSetPosition(player.position.y) + offset.y
           },
           imageSrc: './images/bomb.png',
           scale: .65,
@@ -253,8 +152,8 @@ function blowUpBomb(bomb) {
         row: row,
         col: col,
         position: {
-          x: grid * (col + 1) + .15 * grid,
-          y: grid * row + .15 * grid
+          x: bomb.position.x,
+          y: bomb.position.y
         },
         imageSrc: './images/bomb.png',
         scale: .65,
@@ -325,11 +224,11 @@ function main(timestamp) {
     for (let col = 0; col < numberOfColumns; col++) {
       switch (cells[row][col]) {
         case types.brickWall:
-          context.drawImage(brickWallCanvas, col * grid, row * grid);
+          context.drawImage(brickWallCanvas, col * cellSize, row * cellSize);
           break;
         case types.monolith:
           // monolith.update();
-          context.drawImage(monolithCanvas, col * grid, row * grid);
+          context.drawImage(monolithCanvas, col * cellSize, row * cellSize);
           break;
       }
     }
@@ -348,16 +247,16 @@ function main(timestamp) {
   player.movement.y = 0;
 
   // player movement
-  if (keys.w.pressed) {
+  if (keys.w.pressed && player.position.y >= fieldRestriction.top) {
     player.movement.y = -config.speed;
   }
-  else if (keys.s.pressed) {
+  else if (keys.s.pressed && player.position.y <= fieldRestriction.bottom) {
     player.movement.y = config.speed;
   }
-  else if (keys.a.pressed) {
+  else if (keys.a.pressed && player.position.x >= fieldRestriction.left) {
     player.movement.x = -config.speed;
   }
-  else if (keys.d.pressed) {
+  else if (keys.d.pressed && player.position.x <= fieldRestriction.right) {
     player.movement.x = config.speed;
   }
 
