@@ -1,0 +1,24 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background-image: url(../images/background/fantasy-landscape.jpg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#brick-wall {
+  background: #30303000;
+}
+
+#game-canvas {
+  background-image: url(../images/background/game-field-full.png);
+}
+
+.no-show-up {
+  display: none;
+}
