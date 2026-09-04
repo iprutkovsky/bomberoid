@@ -54,28 +54,24 @@ document.addEventListener('keydown', (e) => {
     case 'KeyW': // Up
       row--;
       keys.w.pressed = true;
-      console.log(cells[row][col], 'current cell', player.position)
       player.idle = false;
       player.spritePositionNumber = 3;
       break;
     case 'KeyS': // Down
       row++;
       keys.s.pressed = true;
-      console.log(cells[row][col], 'current cell', player.position)
       player.idle = false;
       player.spritePositionNumber = 0;
       break;
     case 'KeyA': // Left
       col--;
       keys.a.pressed = true;
-      console.log(cells[row][col], 'current cell', player.position)
       player.idle = false;
       player.spritePositionNumber = 2;
       break;
     case 'KeyD': // Right
       col++;
       keys.d.pressed = true;
-      console.log(cells[row][col], 'current cell', player.position)
       player.idle = false;
       player.spritePositionNumber = 1;
       break;
@@ -88,8 +84,8 @@ document.addEventListener('keydown', (e) => {
           size: player.explosionPower,
           owner: player,
           position: {
-            x: bombSetPosition(player.position.x) + offset.x,
-            y: bombSetPosition(player.position.y) + offset.y
+            x: bombSetPosition(player.position.x) + bombOffset.x,
+            y: bombSetPosition(player.position.y) + bombOffset.y
           },
           imageSrc: './images/bomb.png',
           scale: .65,
@@ -236,8 +232,13 @@ function main(timestamp) {
           context.drawImage(brickWallCanvas, col * cellSize, row * cellSize);
           break;
         case types.monolith:
-          // monolith.update();
           context.drawImage(monolithCanvas, col * cellSize, row * cellSize);
+          break;
+      }
+
+      switch (cells[row][col].type) {
+        case 'monolith':
+          monolith.update();
           break;
       }
     }
@@ -255,17 +256,43 @@ function main(timestamp) {
   player.movement.y = 0;
 
   // player movement
-  if (keys.w.pressed && player.position.y >= fieldRestriction.top) {
-    player.movement.y = -config.speed;
-  }
-  else if (keys.s.pressed && player.position.y <= fieldRestriction.bottom) {
-    player.movement.y = config.speed;
-  }
-  else if (keys.a.pressed && player.position.x >= fieldRestriction.left) {
-    player.movement.x = -config.speed;
-  }
-  else if (keys.d.pressed && player.position.x <= fieldRestriction.right) {
-    player.movement.x = config.speed;
+  switch (true) {
+    case keys.w.pressed:
+      if (checkTypeOfCell(cells, player.position.x, player.position.y - .5 * cellSize - playerOffset.top) == '▉' || checkTypeOfCell(cells, player.position.x, player.position.y - .5 * cellSize - playerOffset.top) == 1) {
+        keys.w.pressed = false;
+        player.idle = true;
+      }
+      else {
+        player.movement.y = -config.speed;
+      }
+      break;
+    case keys.s.pressed:
+      if (checkTypeOfCell(cells, player.position.x, player.position.y + .5 * cellSize + playerOffset.bottom) == '▉' || checkTypeOfCell(cells, player.position.x, player.position.y + .5 * cellSize + playerOffset.bottom) == 1) {
+        keys.s.pressed = false;
+        player.idle = true;
+      }
+      else {
+        player.movement.y = config.speed;
+      }
+      break;
+    case keys.a.pressed:
+      if (checkTypeOfCell(cells, player.position.x - .5 * cellSize - playerOffset.left, player.position.y) == '▉' || checkTypeOfCell(cells, player.position.x - .5 * cellSize - playerOffset.left, player.position.y) == 1) {
+        keys.a.pressed = false;
+        player.idle = true;
+      }
+      else {
+        player.movement.x = -config.speed;
+      }
+      break;
+    case keys.d.pressed:
+      if (checkTypeOfCell(cells, player.position.x + .5 * cellSize + playerOffset.right, player.position.y) == '▉' || checkTypeOfCell(cells, player.position.x + .5 * cellSize + playerOffset.right, player.position.y) == 1) {
+        keys.d.pressed = false;
+        player.idle = true;
+      }
+      else {
+        player.movement.x = config.speed;
+      }
+      break;
   }
 
   // remove deprecated entities
