@@ -237,7 +237,7 @@ function main(timestamp) {
       }
 
       switch (cells[row][col].type) {
-        case 'monolith':
+        case 'monolith':          
           monolith.update();
           break;
       }
@@ -258,7 +258,9 @@ function main(timestamp) {
   // player movement
   switch (true) {
     case keys.w.pressed:
-      if (checkTypeOfCell(cells, player.position.x, player.position.y - .5 * cellSize - playerOffset.top) == '▉' || checkTypeOfCell(cells, player.position.x, player.position.y - .5 * cellSize - playerOffset.top) == 1) {
+      let mazePositionUp = [Math.round((player.position.y - .5 * cellSize - playerOffset.top) / cellSize), Math.round(player.position.x / cellSize)];
+      console.log(`Up | position: [${mazePositionUp[0]}, ${mazePositionUp[1]}] | [x(${player.position.x}), y(${player.position.y})] | ${mazePositionUp}`);
+      if (cells[mazePositionUp[0]][mazePositionUp[1]] == '▉' || cells[mazePositionUp[0]][mazePositionUp[1]] == '1') {
         keys.w.pressed = false;
         player.idle = true;
       }
@@ -267,7 +269,9 @@ function main(timestamp) {
       }
       break;
     case keys.s.pressed:
-      if (checkTypeOfCell(cells, player.position.x, player.position.y + .5 * cellSize + playerOffset.bottom) == '▉' || checkTypeOfCell(cells, player.position.x, player.position.y + .5 * cellSize + playerOffset.bottom) == 1) {
+      let mazePositionDown = [Math.round((player.position.y + .5 * cellSize) / cellSize), Math.round(player.position.x / cellSize)];
+      console.log(`Down | position: [${mazePositionDown[0]}, ${mazePositionDown[1]}] | [x(${player.position.x}), y(${player.position.y})] | ${mazePositionDown}`);
+      if (cells[mazePositionDown[0]][mazePositionDown[1]] == '▉' || cells[mazePositionDown[0]][mazePositionDown[1]] == '1') {
         keys.s.pressed = false;
         player.idle = true;
       }
@@ -276,7 +280,9 @@ function main(timestamp) {
       }
       break;
     case keys.a.pressed:
-      if (checkTypeOfCell(cells, player.position.x - .5 * cellSize - playerOffset.left, player.position.y) == '▉' || checkTypeOfCell(cells, player.position.x - .5 * cellSize - playerOffset.left, player.position.y) == 1) {
+      let mazePositionLeft = [Math.round(player.position.y / cellSize), Math.round((player.position.x - .4 * cellSize) / cellSize)];
+      console.log(`Left | position: [${mazePositionLeft[0]}, ${mazePositionLeft[1]}] | [x(${player.position.x}), y(${player.position.y})] | ${mazePositionLeft}`);
+      if (cells[mazePositionLeft[0]][mazePositionLeft[1]] == '▉' || cells[mazePositionLeft[0]][mazePositionLeft[1]] == '1') {
         keys.a.pressed = false;
         player.idle = true;
       }
@@ -285,7 +291,9 @@ function main(timestamp) {
       }
       break;
     case keys.d.pressed:
-      if (checkTypeOfCell(cells, player.position.x + .5 * cellSize + playerOffset.right, player.position.y) == '▉' || checkTypeOfCell(cells, player.position.x + .5 * cellSize + playerOffset.right, player.position.y) == 1) {
+      let mazePositionRight = [Math.round(player.position.y / cellSize), Math.round((player.position.x + .25 * cellSize + playerOffset.right) / cellSize)];
+      console.log(`Right | position: [${mazePositionRight[0]}, ${mazePositionRight[1]}] | [x(${player.position.x}), y(${player.position.y})] | ${mazePositionRight}`);
+      if (cells[mazePositionRight[0]][mazePositionRight[1]] == '▉' || cells[mazePositionRight[0]][mazePositionRight[1]] == 1) {
         keys.d.pressed = false;
         player.idle = true;
       }

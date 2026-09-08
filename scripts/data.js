@@ -89,7 +89,7 @@ const cells = Array.from({ length: numberOfRows }, (v, i) => {
   switch (true) {
     case i === 0:
     case i == numberOfRows - 1:
-      v = Array.from({ length: numberOfColumns }, () => '▉');
+      v = Array.from({ length: numberOfColumns }, (_, j) => '▉');
       break;
     case !(i % 2):
       v = Array.from({ length: numberOfColumns }, (_, j) => !(j % 2) ? '▉' : '');
@@ -102,8 +102,8 @@ const cells = Array.from({ length: numberOfRows }, (v, i) => {
 });
 
 const monolith = new Monolith({
-  row: 0,
-  col: 0,
+  row: 0, // i
+  col: 0, // j
   position: {
     // x: j * cellSize,
     // y: i * cellSize
@@ -119,8 +119,6 @@ const monolith = new Monolith({
   spritePositionNumber: 0,
   type: 'monolith'
 });
-
-
 
 // const player = new Player(1, 1, config.bombsQuantity, 1);
 const player = new Player({
@@ -148,7 +146,7 @@ const types = {
 
 const playerOffset = {
   top: 2,
-  bottom: 1,
+  bottom: 0,
   left: 3,
   right: 3,
 };

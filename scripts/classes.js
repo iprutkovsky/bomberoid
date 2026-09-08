@@ -11,11 +11,11 @@ class Sprite {
     this.image = new Image();
     this.image.src = imageSrc;
     this.scale = scale;
-    this.framesMax = framesMax;
-    this.spriteRow = spriteRow;
-    this.spriteRowMax = spriteRowMax;
-    this.spritePositions = spritePositions;
-    this.spritePositionNumber = spritePositionNumber;
+    this.framesMax = framesMax; // max quantity of frames
+    this.spriteRow = spriteRow; // number of row in the picture
+    this.spriteRowMax = spriteRowMax; // max quantity of row in the picture
+    this.spritePositions = spritePositions; // quantity positions in sprite row
+    this.spritePositionNumber = spritePositionNumber; // number of sprite position in the sprite row
     this.framesCurrent = 0;
     this.framesElapsed = 0;
     this.framesHold = 45;
