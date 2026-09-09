@@ -21,12 +21,15 @@
 //   ['▉', '▉', '▉', '▉', '▉', '▉', '▉', '▉', '▉', '▉', '▉', '▉', '▉', '▉', '▉']
 // ];
 
+const brickWallDestructionTimer = 500;
+
 const bombOffset = {
   x: 8,
   y: 8,
 };
 
 const cellSize = 64;
+const playerSize = 62;
 
 const config = {
   bombsQuantity: 1,
@@ -62,8 +65,6 @@ const dirs = [
 
 let dt;
 let entities = [];
-
-
 
 const keys = {
   w: {
@@ -189,13 +190,13 @@ const monolith = new Monolith({
 
 // const player = new Player(1, 1, config.bombsQuantity, 1);
 const player = new Player({
-  row: 1,
+  row: 2,
   col: 1,
   bombsQuantity: config.bombsQuantity,
   explosionPower: 1,
   position: {
-    x: 67,
-    y: 130
+    x: 64,
+    y: 128
   },
   imageSrc: './images/player.png',
   scale: .65,
@@ -205,10 +206,9 @@ const player = new Player({
   spritePositions: 4,
   spritePositionNumber: 1
 });
+
 const types = {
-  bomb: 2,
-  brickWall: 1,
-  monolith: '▉',
+  bomb: 2,  
 };
 
 const playerOffset = {

@@ -145,7 +145,7 @@ class Monolith extends Sprite {
     this.position = position;
     this.framesCurrent = 0;
     this.framesElapsed = 0;
-    this.framesHold = 45;
+    this.framesHold = 10;
     this.type = type;
   }
 
