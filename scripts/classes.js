@@ -128,7 +128,7 @@ class Monolith extends Sprite {
   height = 64
   width = 64;
 
-  constructor({ row, col, position, imageSrc, scale, framesMax, spriteRow, spriteRowMax, spritePositions, spritePositionNumber, type }) {
+  constructor({ row, col, idle = true, position, imageSrc, scale, framesMax, spriteRow, spriteRowMax, spritePositions, spritePositionNumber, type }) {
     super({
       position,
       imageSrc,
@@ -141,6 +141,7 @@ class Monolith extends Sprite {
     });
     this.row = row;
     this.col = col;
+    this.idle = idle;
     this.position = position;
     this.framesCurrent = 0;
     this.framesElapsed = 0;
@@ -151,6 +152,10 @@ class Monolith extends Sprite {
   update() {
     this.draw();
     this.animateFrames();
+
+    if (this.idle) {
+      this.framesCurrent = 0;
+    }
   };
 }
 

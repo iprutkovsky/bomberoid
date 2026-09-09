@@ -7,42 +7,6 @@ const context = canvas.getContext('2d');
 canvas.width = cellSize * numberOfColumns;
 canvas.height = cellSize * numberOfRows;
 
-// canvas for the bricks
-const brickWallCanvas = document.createElement('canvas');
-const brickWallCtx = brickWallCanvas.getContext('2d');
-
-brickWallCanvas.width = cellSize;
-brickWallCanvas.height = cellSize;
-
-brickWallCtx.fillStyle = 'grey';
-brickWallCtx.fillRect(0, 0, cellSize, cellSize);
-
-// 1st row brick
-brickWallCtx.fillStyle = '#bdbdbd';
-brickWallCtx.fillRect(1, 1, cellSize - 2, 20);
-
-// 2nd row bricks
-brickWallCtx.fillRect(0, 23, 20, 18);
-brickWallCtx.fillRect(22, 23, 42, 18);
-
-// 3rd row bricks
-brickWallCtx.fillRect(0, 43, 42, 20);
-brickWallCtx.fillRect(44, 43, 20, 20);
-
-// canvas for the monolith
-const monolithCanvas = document.createElement('canvas');
-const monolithCtx = monolithCanvas.getContext('2d');
-
-monolithCanvas.width = cellSize;
-monolithCanvas.height = cellSize;
-
-monolithCtx.fillStyle = 'grey';
-monolithCtx.fillRect(0, 0, cellSize, cellSize);
-monolithCtx.fillStyle = '#d6d6d6';
-monolithCtx.fillRect(0, 0, cellSize - 2, cellSize - 2);
-monolithCtx.fillStyle = '#a9a9a9';
-monolithCtx.fillRect(2, 2, cellSize - 4, cellSize - 4);
-
 // -= Movement section =-
 document.addEventListener('keydown', (e) => {
   let row = player.row;
@@ -204,7 +168,22 @@ function generateMazeLayout() {
 
       // % of chance cells will contain a brick
       if (!cells[row][col] && Math.random() < difficulty['easy'][2]) {
-        cells[row][col] = types.brickWall;
+        cells[row][col] = new Monolith({
+          row: row, // i
+          col: col, // j
+          position: {
+            x: col * cellSize,
+            y: row * cellSize
+          },
+          imageSrc: './images/brick_wall.png',
+          scale: 1,
+          framesMax: 8,
+          spriteRow: 0,
+          spriteRowMax: 1,
+          spritePositions: 1,
+          spritePositionNumber: 0,
+          type: 'brickWall'
+        });
       }
     }
   }
@@ -227,18 +206,12 @@ function main(timestamp) {
   // update main field
   for (let row = 0; row < numberOfRows; row++) {
     for (let col = 0; col < numberOfColumns; col++) {
-      switch (cells[row][col]) {
-        case types.brickWall:
-          context.drawImage(brickWallCanvas, col * cellSize, row * cellSize);
-          break;
-        case types.monolith:
-          context.drawImage(monolithCanvas, col * cellSize, row * cellSize);
-          break;
-      }
-
       switch (cells[row][col].type) {
-        case 'monolith':          
-          monolith.update();
+        case 'brickWall':
+          cells[row][col].update();
+          break;
+        case 'monolith':
+          cells[row][col].update();
           break;
       }
     }

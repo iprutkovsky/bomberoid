@@ -89,16 +89,83 @@ const cells = Array.from({ length: numberOfRows }, (v, i) => {
   switch (true) {
     case i === 0:
     case i == numberOfRows - 1:
-      v = Array.from({ length: numberOfColumns }, (_, j) => '▉');
+      v = Array.from({ length: numberOfColumns }, (_, j) =>
+        new Monolith({
+          row: i, // i
+          col: j, // j
+          position: {
+            x: j * cellSize,
+            y: i * cellSize
+          },
+          imageSrc: './images/monolith.png',
+          scale: 1,
+          framesMax: 1,
+          spriteRow: 0,
+          spriteRowMax: 1,
+          spritePositions: 2,
+          spritePositionNumber: 0,
+          type: 'monolith'
+        }));
       break;
     case !(i % 2):
-      v = Array.from({ length: numberOfColumns }, (_, j) => !(j % 2) ? '▉' : '');
+      v = Array.from({ length: numberOfColumns }, (_, j) =>
+        !(j % 2) ?
+          new Monolith({
+            row: i, // i
+            col: j, // j
+            position: {
+              x: j * cellSize,
+              y: i * cellSize
+            },
+            imageSrc: './images/monolith.png',
+            scale: 1,
+            framesMax: 1,
+            spriteRow: 0,
+            spriteRowMax: 1,
+            spritePositions: 2,
+            spritePositionNumber: j == 0 || j == numberOfColumns - 1 ? 0 : 1,
+            type: 'monolith'
+          }) : '');
       break;
     default:
-      v = Array.from({ length: numberOfColumns }, (_, k) => k == 0 || k == numberOfColumns - 1 ? '▉' : '');
+      v = Array.from({ length: numberOfColumns }, (_, j) =>
+        j == 0 || j == numberOfColumns - 1 ?
+          new Monolith({
+            row: i, // i
+            col: j, // j
+            position: {
+              x: j * cellSize,
+              y: i * cellSize
+            },
+            imageSrc: './images/monolith.png',
+            scale: 1,
+            framesMax: 1,
+            spriteRow: 0,
+            spriteRowMax: 1,
+            spritePositions: 2,
+            spritePositionNumber: 0,
+            type: 'monolith'
+          }) : '');
       break;
   }
   return v;
+});
+
+const brickWall = new Monolith({
+  row: 0, // i
+  col: 0, // j
+  position: {
+    x: 0,
+    y: 0
+  },
+  imageSrc: './images/brick_wall.png',
+  scale: 1,
+  framesMax: 1,
+  spriteRow: 0,
+  spriteRowMax: 1,
+  spritePositions: 1,
+  spritePositionNumber: 0,
+  type: 'brickWall'
 });
 
 const monolith = new Monolith({
