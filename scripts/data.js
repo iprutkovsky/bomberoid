@@ -90,24 +90,7 @@ const difficulty = {
   insane: [9, 5, .75]
 };
 
-const dirs = [
-  {
-    row: -1, // up
-    col: 0
-  },
-  {
-    row: 1, // down
-    col: 0
-  },
-  {
-    row: 0,
-    col: -1 // left
-  },
-  {
-    row: 0,
-    col: 1 // right
-  }
-];
+const directions = [[0, 0], [-1, 0], [1, 0], [0, -1], [0, 1]];
 
 let dt;
 let entities = [];

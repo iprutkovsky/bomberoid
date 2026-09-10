@@ -42,7 +42,7 @@ document.addEventListener('keydown', (e) => {
           row: row,
           col: col,
           size: player.explosionPower,
-          owner: player,
+          owner: 'player',
           position: {
             x: bombSetPosition(player.position.x) + bombOffset.x,
             y: bombSetPosition(player.position.y) + bombOffset.y
@@ -96,7 +96,7 @@ document.addEventListener('keyup', (e) => {
 
 // blow up a bomb and its surrounding tiles
 function blowUpBomb(bomb) {
-  
+
   // bomb has already exploded so don't blow up again
   if (!bomb.alive) return;
 
@@ -108,63 +108,63 @@ function blowUpBomb(bomb) {
   cells[bomb.row][bomb.col] = '';
   clearTimeout(brickWallTimer);
 
-  dirs.forEach((dir) => {
-    for (let i = 0; i <= bomb.size; i++) {
-      const row = bomb.row + dir.row * i;
-      const col = bomb.col + dir.col * i;
-      const cell = cells[row][col];
-      const explosion = new Explosion({
-        row: row,
-        col: col,
-        position: {
-          x: bomb.position.x,
-          y: bomb.position.y
-        },
-        imageSrc: './images/bomb.png',
-        scale: .65,
-        framesMax: 4,
-        spriteRow: 1,
-        spriteRowMax: 8
-      });
+  directions.forEach((dir) => {
+    const row = bomb.row + dir[0];
+    const col = bomb.col + dir[1];
+    const cell = cells[row][col];
+    const explosion = new Explosion({
+      row: row,
+      col: col,
+      position: {
+        x: bomb.position.x,
+        y: bomb.position.y
+      },
+      imageSrc: './images/bomb.png',
+      scale: .65,
+      framesMax: 4,
+      spriteRow: 1,
+      spriteRowMax: 8
+    });
 
-      switch (cell.type) {
-        // run brick wall destruction
-        case 'brickWall':
-          cell.idle = false;
-          brickWallTimer = setTimeout(() => (cells[row][col] = ''), brickWallDestructionTimer);
-          break;
-        // stop the explosion if it hit a wall
-        case 'monolith':
-          return;
-      }
+    console.log(`from directions: [${row}, ${col}], [${bomb.row}, ${bomb.col}]`);
 
-      // center of the explosion is the first iteration of the loop
-      entities.push(explosion);
-      // cells[row][col] = '';
-
-      if (row == player.row && col == player.col) {
-        console.log('same location with player');
-        console.log(playerDestruction, player.position.x, player.position.y);
-        player.destruction = true;
-        playerDestruction.col = player.col;
-        playerDestruction.row = player.row;
-        playerDestruction.position.x = player.position.x;
-        playerDestruction.position.y = player.position.y;
-      }
-
-      // bomb hit another bomb so blow that one up too
-      if (cell.type == 'bomb') {
-        // find the bomb that was hit by comparing positions
-        const nextBomb = entities.find((entity) =>
-          entity.type == 'bomb' && entity.row == row && entity.col == col
-        );
-        blowUpBomb(nextBomb);
-      }
-
-      // stop the explosion if hit anything
-      if (cell) {
+    switch (cell.type) {
+      // run brick wall destruction
+      case 'brickWall':
+        cell.idle = false;
+        brickWallTimer = setTimeout(() => (cells[row][col] = ''), brickWallDestructionTimer);
+        break;
+      // stop the explosion if it hit a wall
+      case 'monolith':
         return;
-      }
+    }
+
+    // center of the explosion is the first iteration of the loop
+    entities.push(explosion);
+    // cells[row][col] = '';
+
+    if (row == player.row && col == player.col) {
+      console.log('same location with player');
+      player.destruction = true;
+      playerDestruction.col = player.col;
+      playerDestruction.row = player.row;
+      playerDestruction.position.x = player.position.x;
+      playerDestruction.position.y = player.position.y;
+      console.log(playerDestruction, player.position.x, player.position.y);
+    }
+
+    // bomb hit another bomb so blow that one up too
+    if (cell.type == 'bomb') {
+      // find the bomb that was hit by comparing positions
+      const nextBomb = entities.find((entity) =>
+        entity.type == 'bomb' && entity.row == row && entity.col == col
+      );
+      blowUpBomb(nextBomb);
+    }
+
+    // stop the explosion if hit anything
+    if (cell) {
+      return;
     }
   });
 }
