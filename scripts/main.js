@@ -36,7 +36,7 @@ document.addEventListener('keydown', (e) => {
       player.spritePositionNumber = 1;
       break;
     case 'Space': // Set bomb
-      if (!cells[row][col] && entities.filter((entity) => entity.type == types.bomb && entity.owner == player).length < player.bombsQuantity) {
+      if (!cells[row][col] && entities.filter((entity) => entity.type == 'bomb' && entity.owner == player).length < player.bombsQuantity) {
         // console.log(player, 'player details');
         const bomb = new Bomb({
           row: row,
@@ -51,10 +51,11 @@ document.addEventListener('keydown', (e) => {
           scale: .65,
           framesMax: 4,
           spriteRow: 0,
-          spriteRowMax: 8
+          spriteRowMax: 8,
+          type: 'bomb'
         });
         entities.push(bomb);
-        cells[row][col] = types.bomb;
+        cells[row][col].type = 'bomb';
       }
       break;
     case 'Escape': // Pause
@@ -95,8 +96,7 @@ document.addEventListener('keyup', (e) => {
 
 // blow up a bomb and its surrounding tiles
 function blowUpBomb(bomb) {
-
-  let brickWallTimer = null;
+  
   // bomb has already exploded so don't blow up again
   if (!bomb.alive) return;
 
@@ -107,6 +107,7 @@ function blowUpBomb(bomb) {
   // remove bomb from the field
   cells[bomb.row][bomb.col] = '';
   clearTimeout(brickWallTimer);
+
   dirs.forEach((dir) => {
     for (let i = 0; i <= bomb.size; i++) {
       const row = bomb.row + dir.row * i;
@@ -126,26 +127,36 @@ function blowUpBomb(bomb) {
         spriteRowMax: 8
       });
 
-      // stop the explosion if it hit a wall
-      if (cell.type == 'monolith') {
-        return;
+      switch (cell.type) {
+        // run brick wall destruction
+        case 'brickWall':
+          cell.idle = false;
+          brickWallTimer = setTimeout(() => (cells[row][col] = ''), brickWallDestructionTimer);
+          break;
+        // stop the explosion if it hit a wall
+        case 'monolith':
+          return;
       }
 
       // center of the explosion is the first iteration of the loop
       entities.push(explosion);
       // cells[row][col] = '';
 
-      // run brick wall destruction
-      if (cell.type == 'brickWall') {
-        cell.idle = false;
-        brickWallTimer = setTimeout(() => (cells[row][col] = ''), brickWallDestructionTimer);        
+      if (row == player.row && col == player.col) {
+        console.log('same location with player');
+        console.log(playerDestruction, player.position.x, player.position.y);
+        player.destruction = true;
+        playerDestruction.col = player.col;
+        playerDestruction.row = player.row;
+        playerDestruction.position.x = player.position.x;
+        playerDestruction.position.y = player.position.y;
       }
 
       // bomb hit another bomb so blow that one up too
-      if (cell == types.bomb) {
+      if (cell.type == 'bomb') {
         // find the bomb that was hit by comparing positions
         const nextBomb = entities.find((entity) =>
-          entity.type == types.bomb && entity.row == row && entity.col == col
+          entity.type == 'bomb' && entity.row == row && entity.col == col
         );
         blowUpBomb(nextBomb);
       }
@@ -158,14 +169,14 @@ function blowUpBomb(bomb) {
   });
 }
 
-// generate maze
+// generate maze level
 function generateMazeLayout() {
 
   // console.log(cells);
   for (let row = 1; row < numberOfRows - 1; row++) {
     for (let col = 1; col < numberOfColumns - 1; col++) {
 
-      if ([1, 11].includes(row) && [1, 2, 12, 13].includes(col) || [2, 10].includes(row) && [1, 13].includes(col)) {
+      if ([1, 11].includes(row) && [1, 2, 12, 13].includes(col) || [2, 3, 9, 10].includes(row) && [1, 13].includes(col)) {
         continue;
       }
 
@@ -190,6 +201,10 @@ function generateMazeLayout() {
       }
     }
   }
+}
+
+function getRandomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 function main(timestamp) {
@@ -227,6 +242,10 @@ function main(timestamp) {
   });
 
   player.update();
+  if (player.destruction) {
+    playerDestruction.update();
+  }
+  // bonus.update();
 
   player.movement.x = 0;
   player.movement.y = 0;
@@ -283,5 +302,18 @@ function main(timestamp) {
   entities = entities.filter((entity) => entity.alive);
 }
 
+function playerStartPosition() {
+  clearTimeout(brickWallTimer);
+  brickWallTimer = null;
+  entities = [];
+  player.row = getRandomNumber(1, 3);
+  player.col = player.row < 2 ? getRandomNumber(1, 2) : 1;
+  player.destruction = false;
+  player.position.x = player.col * cellSize + playerOffset.top;
+  player.position.y = player.row * cellSize + playerOffset.top;
+  playerDestruction.framesCurrent = 0;
+}
+
 generateMazeLayout();
+playerStartPosition();
 requestAnimationFrame(main);

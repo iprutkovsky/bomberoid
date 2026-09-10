@@ -11,14 +11,6 @@ body {
   justify-content: center;
 }
 
-#brick-wall {
-  background: #30303000;
-}
-
 #game-canvas {
   background-image: url(../images/background/game-field-full.png);
-}
-
-.no-show-up {
-  display: none;
 }

@@ -53,10 +53,9 @@ class Bomb extends Sprite {
   alive = true;
   height = 63;
   timer = 3000;
-  type = 2;
   width = 63;
 
-  constructor({ row, col, size, owner, position, imageSrc, scale, framesMax, spriteRow, spriteRowMax }) {
+  constructor({ row, col, size, owner, position, imageSrc, scale, framesMax, spriteRow, spriteRowMax, type }) {
     super({
       position,
       imageSrc,
@@ -73,6 +72,7 @@ class Bomb extends Sprite {
     this.framesCurrent = 0;
     this.framesElapsed = 0;
     this.framesHold = 45;
+    this.type = type;
   }
 
   // update the bomb each frame
@@ -85,6 +85,51 @@ class Bomb extends Sprite {
     // blow up bomb if timer is done
     if (this.timer <= 0) {
       return blowUpBomb(this);
+    }
+  };
+}
+
+class Bonus extends Sprite {
+
+  width = 64;
+  height = 64;
+
+  constructor({
+    row,
+    col,
+    touched = false,
+    position,
+    imageSrc,
+    scale,
+    framesMax,
+    spriteRow,
+    spriteRowMax,
+    spritePositions,
+    spritePositionNumber
+  }) {
+    super({
+      position,
+      imageSrc,
+      scale,
+      framesMax,
+      spriteRow,
+      spriteRowMax,
+      spritePositions,
+      spritePositionNumber
+    });
+    this.row = row;
+    this.col = col;
+    this.touched = touched;
+    this.position = position;
+    this.framesCurrent = 0;
+    this.framesElapsed = 0;
+    this.framesHold = 15;
+  }
+
+  update() {
+    if (this.touched) {
+      this.draw();
+      this.animateFrames();
     }
   };
 }
@@ -171,6 +216,7 @@ class Player extends Sprite {
     bombsQuantity,
     explosionPower,
     idle = true,
+    destruction = false,
     position,
     imageSrc,
     scale,
@@ -196,6 +242,7 @@ class Player extends Sprite {
     this.bombsQuantity = bombsQuantity;
     this.explosionPower = explosionPower;
     this.idle = idle;
+    this.destruction = destruction;
     this.position = position;
     this.framesCurrent = 0;
     this.framesElapsed = 0;
@@ -203,14 +250,70 @@ class Player extends Sprite {
   }
 
   update() {
+    if (!this.destruction) {
+      this.draw();
+      this.animateFrames();
+
+      this.position.x += this.movement.x;
+      this.position.y += this.movement.y;
+
+      if (this.idle) {
+        this.framesCurrent = 0;
+      }
+    }
+  };
+}
+
+class PlayerDestruction extends Sprite {
+
+  width = 96;
+  height = 96;
+
+  constructor({
+    row,
+    col,
+    position,
+    imageSrc,
+    scale,
+    framesMax,
+    spriteRow,
+    spriteRowMax,
+    // spritePositions,
+    // spritePositionNumber
+    type
+  }) {
+    super({
+      position,
+      imageSrc,
+      scale,
+      framesMax,
+      spriteRow,
+      spriteRowMax,
+      // spritePositions,
+      // spritePositionNumber
+    });
+    this.row = row;
+    this.col = col;
+    this.position = position;
+    this.framesCurrent = 0;
+    this.framesElapsed = 0;
+    this.framesHold = 18;
+    this.type = type;
+  }
+
+  animateFrames() {
+    this.framesElapsed++;
+    if (!(this.framesElapsed % this.framesHold) && this.framesCurrent < this.framesMax) {
+      this.framesCurrent++;
+    }
+
+    if (this.framesCurrent == this.framesMax) {      
+      playerStartPosition();
+    }
+  }
+
+  update() {
     this.draw();
     this.animateFrames();
-
-    this.position.x += this.movement.x;
-    this.position.y += this.movement.y;
-
-    if (this.idle) {
-      this.framesCurrent = 0;
-    }
   };
 }
