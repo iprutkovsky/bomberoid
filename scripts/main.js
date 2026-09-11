@@ -11,6 +11,8 @@ canvas.height = cellSize * numberOfRows;
 document.addEventListener('keydown', (e) => {
   let row = Math.floor((player.position.y + playerSize) / cellSize);
   let col = Math.floor((player.position.x + playerSize) / cellSize);
+  let leftTop;
+  let rightBottom;
 
   // console.log(cells);
   // console.log(e.key, row, (player.position.y), col, (player.position.x));
@@ -44,9 +46,13 @@ document.addEventListener('keydown', (e) => {
           size: player.explosionPower,
           owner: 'player',
           position: {
-            x: bombSetPosition(player.position.x) + bombOffset.x,
-            y: bombSetPosition(player.position.y) + bombOffset.y
+            x: col * cellSize + bombOffset.x,
+            y: row * cellSize + bombOffset.y
           },
+          // position: {
+          //   x: bombSetPosition(player.position.x) + bombOffset.x,
+          //   y: bombSetPosition(player.position.y) + bombOffset.y
+          // },
           imageSrc: './images/bomb.png',
           scale: .65,
           framesMax: 4,
@@ -81,15 +87,15 @@ document.addEventListener('keyup', (e) => {
       break;
     case 'KeyS': // Down
       keys.s.pressed = false;
-      player.idle = true;
+      player.idle = true;      
       break;
     case 'KeyA': // Left
       keys.a.pressed = false;
-      player.idle = true;
+      player.idle = true;      
       break;
     case 'KeyD': // Right
       keys.d.pressed = false;
-      player.idle = true;
+      player.idle = true;      
       break;
   }
 });
@@ -108,23 +114,13 @@ function blowUpBomb(bomb) {
   cells[bomb.row][bomb.col] = '';
   clearTimeout(brickWallTimer);
 
-  directions.forEach((dir) => {
+  //    0,    1,  2,    3,    4
+  // center , Up, Down, Left, Right
+  // [[0, 0], [-1, 0], [1, 0], [0, -1], [0, 1]];
+  directions.forEach((dir, i) => {
     const row = bomb.row + dir[0];
     const col = bomb.col + dir[1];
     const cell = cells[row][col];
-    const explosion = new Explosion({
-      row: row,
-      col: col,
-      position: {
-        x: bomb.position.x,
-        y: bomb.position.y
-      },
-      imageSrc: './images/bomb.png',
-      scale: .65,
-      framesMax: 4,
-      spriteRow: 1,
-      spriteRowMax: 8
-    });
 
     console.log(`from directions: [${row}, ${col}], [${bomb.row}, ${bomb.col}]`);
 
@@ -140,17 +136,31 @@ function blowUpBomb(bomb) {
     }
 
     // center of the explosion is the first iteration of the loop
-    entities.push(explosion);
-    // cells[row][col] = '';
+    // i iterate over edges of explosion and add to the center (0 - center, 1 - top, 2 - bottom, 3 - left, 4 - right)
+    entities.push(
+      new Explosion({
+        row: row,
+        col: col,
+        position: {
+          x: col * cellSize,
+          y: row * cellSize
+        },
+        imageSrc: './images/bomb_edit.png',
+        scale: 1,
+        framesMax: 4,
+        spriteRow: i,
+        spriteRowMax: 8
+      })
+    );
 
     if (row == player.row && col == player.col) {
-      console.log('same location with player');
+      // console.log('same location with player');
       player.destruction = true;
       playerDestruction.col = player.col;
       playerDestruction.row = player.row;
       playerDestruction.position.x = player.position.x;
       playerDestruction.position.y = player.position.y;
-      console.log(playerDestruction, player.position.x, player.position.y);
+      // console.log(playerDestruction, player.position.x, player.position.y);
     }
 
     // bomb hit another bomb so blow that one up too

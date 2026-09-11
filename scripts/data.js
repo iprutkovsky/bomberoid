@@ -205,7 +205,7 @@ const player = new Player({
   row: 2,
   col: 1,
   bombsQuantity: config.bombsQuantity,
-  explosionPower: 1,
+  explosionPower: 1,  
   position: {
     x: 64,
     y: 128
@@ -230,7 +230,7 @@ const playerDestruction = new PlayerDestruction({
   scale: .65,
   framesMax: 9,
   spriteRow: 0,
-  spriteRowMax: 1,
+  spriteRowMax: 4,
   // spritePositions: 1,
   // spritePositionNumber: 0
   type: 'destroyed'
