@@ -15,7 +15,7 @@ document.addEventListener('keydown', (e) => {
   let rightBottom;
 
   // console.log(cells);
-  // console.log(e.key, row, (player.position.y), col, (player.position.x));
+  console.log(e.key, row, (player.position.y), col, (player.position.x));
   switch (e.code) {
     case 'KeyW': // Up
       keys.w.pressed = true;
@@ -122,7 +122,7 @@ function blowUpBomb(bomb) {
     const col = bomb.col + dir[1];
     const cell = cells[row][col];
 
-    console.log(`from directions: [${row}, ${col}], [${bomb.row}, ${bomb.col}]`);
+    // console.log(`from directions: [${row}, ${col}], [${bomb.row}, ${bomb.col}]`);
 
     switch (cell.type) {
       // run brick wall destruction
@@ -263,7 +263,7 @@ function main(timestamp) {
   // player movement
   switch (true) {
     case keys.w.pressed:
-      let mazePositionUp = [Math.round((player.position.y - .5 * cellSize - playerOffset.top) / cellSize), Math.round(player.position.x / cellSize)];
+      let mazePositionUp = [Math.round((player.position.y - .525 * cellSize) / cellSize), Math.round(player.position.x / cellSize)];
       // console.log(`Up | position: [${mazePositionUp[0]}, ${mazePositionUp[1]}] | [x(${player.position.x}), y(${player.position.y})] | ${mazePositionUp}`);
       if (cells[mazePositionUp[0]][mazePositionUp[1]].type == 'brickWall' || cells[mazePositionUp[0]][mazePositionUp[1]].type == 'monolith') {
         keys.w.pressed = false;
@@ -274,7 +274,7 @@ function main(timestamp) {
       }
       break;
     case keys.s.pressed:
-      let mazePositionDown = [Math.round((player.position.y + .5 * cellSize) / cellSize), Math.round(player.position.x / cellSize)];
+      let mazePositionDown = [Math.round((player.position.y + .525 * cellSize) / cellSize), Math.round(player.position.x / cellSize)];
       // console.log(`Down | position: [${mazePositionDown[0]}, ${mazePositionDown[1]}] | [x(${player.position.x}), y(${player.position.y})] | ${mazePositionDown}`);
       if (cells[mazePositionDown[0]][mazePositionDown[1]].type == 'brickWall' || cells[mazePositionDown[0]][mazePositionDown[1]].type == 'monolith') {
         keys.s.pressed = false;
@@ -285,7 +285,7 @@ function main(timestamp) {
       }
       break;
     case keys.a.pressed:
-      let mazePositionLeft = [Math.round(player.position.y / cellSize), Math.round((player.position.x - .4 * cellSize) / cellSize)];
+      let mazePositionLeft = [Math.round(player.position.y / cellSize), Math.round((player.position.x - .55 * cellSize) / cellSize)];
       // console.log(`Left | position: [${mazePositionLeft[0]}, ${mazePositionLeft[1]}] | [x(${player.position.x}), y(${player.position.y})] | ${mazePositionLeft}`);
       if (cells[mazePositionLeft[0]][mazePositionLeft[1]].type == 'brickWall' || cells[mazePositionLeft[0]][mazePositionLeft[1]].type == 'monolith') {
         keys.a.pressed = false;
@@ -296,7 +296,7 @@ function main(timestamp) {
       }
       break;
     case keys.d.pressed:
-      let mazePositionRight = [Math.round(player.position.y / cellSize), Math.round((player.position.x + .25 * cellSize + playerOffset.right) / cellSize)];
+      let mazePositionRight = [Math.round(player.position.y / cellSize), Math.round((player.position.x + .55 * cellSize) / cellSize)];
       // console.log(`Right | position: [${mazePositionRight[0]}, ${mazePositionRight[1]}] | [x(${player.position.x}), y(${player.position.y})] | ${mazePositionRight}`);
       if (cells[mazePositionRight[0]][mazePositionRight[1]].type == 'brickWall' || cells[mazePositionRight[0]][mazePositionRight[1]].type == 'monolith') {
         keys.d.pressed = false;
