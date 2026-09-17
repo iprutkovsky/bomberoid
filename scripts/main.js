@@ -13,7 +13,7 @@ document.addEventListener('keydown', (e) => {
   let col = player.col;
 
   // console.log(cells);
-  // console.log(e.key, row, (player.position.y), col, (player.position.x));
+  console.log(e.key, row, (player.position.y), col, (player.position.x));
   switch (e.code) {
     case 'KeyW': // Up
       keys.w.pressed = true;
