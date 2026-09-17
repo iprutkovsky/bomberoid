@@ -9,13 +9,11 @@ canvas.height = cellSize * numberOfRows;
 
 // -= Movement section =-
 document.addEventListener('keydown', (e) => {
-  let row = Math.floor((player.position.y + playerSize) / cellSize);
-  let col = Math.floor((player.position.x + playerSize) / cellSize);
-  let leftTop;
-  let rightBottom;
+  let row = player.row;
+  let col = player.col;
 
   // console.log(cells);
-  console.log(e.key, row, (player.position.y), col, (player.position.x));
+  // console.log(e.key, row, (player.position.y), col, (player.position.x));
   switch (e.code) {
     case 'KeyW': // Up
       keys.w.pressed = true;
@@ -49,10 +47,6 @@ document.addEventListener('keydown', (e) => {
             x: col * cellSize + bombOffset.x,
             y: row * cellSize + bombOffset.y
           },
-          // position: {
-          //   x: bombSetPosition(player.position.x) + bombOffset.x,
-          //   y: bombSetPosition(player.position.y) + bombOffset.y
-          // },
           imageSrc: './images/bomb.png',
           scale: .65,
           framesMax: 4,
@@ -87,15 +81,15 @@ document.addEventListener('keyup', (e) => {
       break;
     case 'KeyS': // Down
       keys.s.pressed = false;
-      player.idle = true;      
+      player.idle = true;
       break;
     case 'KeyA': // Left
       keys.a.pressed = false;
-      player.idle = true;      
+      player.idle = true;
       break;
     case 'KeyD': // Right
       keys.d.pressed = false;
-      player.idle = true;      
+      player.idle = true;
       break;
   }
 });
@@ -254,6 +248,7 @@ function main(timestamp) {
     entity.update(dt);
   });
 
+  // update player and player's status
   player.update();
   if (player.destruction) {
     playerDestruction.update();
@@ -273,6 +268,8 @@ function main(timestamp) {
         player.idle = true;
       }
       else {
+        player.row = Math.round(player.position.y / cellSize);
+        player.col = Math.round(player.position.x / cellSize);
         player.movement.y = -config.speed;
       }
       break;
@@ -284,6 +281,8 @@ function main(timestamp) {
         player.idle = true;
       }
       else {
+        player.row = Math.round(player.position.y / cellSize);
+        player.col = Math.round(player.position.x / cellSize);
         player.movement.y = config.speed;
       }
       break;
@@ -295,6 +294,8 @@ function main(timestamp) {
         player.idle = true;
       }
       else {
+        player.row = Math.round(player.position.y / cellSize);
+        player.col = Math.round(player.position.x / cellSize);
         player.movement.x = -config.speed;
       }
       break;
@@ -306,6 +307,8 @@ function main(timestamp) {
         player.idle = true;
       }
       else {
+        player.row = Math.round(player.position.y / cellSize);
+        player.col = Math.round(player.position.x / cellSize);
         player.movement.x = config.speed;
       }
       break;
