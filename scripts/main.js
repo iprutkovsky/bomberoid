@@ -13,39 +13,68 @@ document.addEventListener('keydown', (e) => {
   let col = player.col;
 
   // console.log(cells);
-  console.log(e.key, row, (player.position.y), col, (player.position.x));
+  // console.log(e.key, row, (player.position.y), col, (player.position.x));
+
+  // if (!activeKey) {
+  //   activeKey = e.code;
+  //   // return;
+  // }
+
   switch (e.code) {
     case 'KeyW': // Up
-      keys.w.pressed = true;
-      player.idle = false;
-      player.spritePositionNumber = 3;
+      // if (activeKey != e.code) {
+      //   e.preventDefault();
+      // }
+      // else {
+        keys.w.pressed = true;
+        player.idle = false;
+        player.spritePositionNumber = 3;
+        console.log(player.idle, 'Up')
+      // }
       break;
     case 'KeyS': // Down
-      keys.s.pressed = true;
-      player.idle = false;
-      player.spritePositionNumber = 0;
+      // if (activeKey != e.code) {
+      //   e.preventDefault();
+      // }
+      // else {
+        keys.s.pressed = true;
+        player.idle = false;
+        player.spritePositionNumber = 0;
+        console.log(player.idle, 'Down')
+      // }
       break;
     case 'KeyA': // Left
-      keys.a.pressed = true;
-      player.idle = false;
-      player.spritePositionNumber = 2;
+      // if (activeKey != e.code) {
+      //   e.preventDefault();
+      // }
+      // else {
+        keys.a.pressed = true;
+        player.idle = false;
+        player.spritePositionNumber = 2;
+        console.log(player.idle, 'Left')
+      // }
       break;
     case 'KeyD': // Right
-      keys.d.pressed = true;
-      player.idle = false;
-      player.spritePositionNumber = 1;
+      // if (activeKey != e.code) {
+      //   e.preventDefault();
+      // }
+      // else {
+        keys.d.pressed = true;
+        player.idle = false;
+        player.spritePositionNumber = 1;
+        console.log(player.idle, 'Right')
+      // }
       break;
     case 'Space': // Set bomb
       if (!cells[row][col] && entities.filter((entity) => entity.type == 'bomb' && entity.owner == player).length < player.bombsQuantity) {
-        // console.log(player, 'player details');
         const bomb = new Bomb({
           row: row,
           col: col,
           size: player.explosionPower,
           owner: 'player',
           position: {
-            x: col * cellSize + bombOffset.x,
-            y: row * cellSize + bombOffset.y
+            x: getPosition(col) + bombOffset.x,
+            y: getPosition(row) + bombOffset.y
           },
           imageSrc: './images/bomb.png',
           scale: .65,
@@ -54,8 +83,8 @@ document.addEventListener('keydown', (e) => {
           spriteRowMax: 8,
           type: 'bomb'
         });
+        cells[row][col] = bomb;
         entities.push(bomb);
-        cells[row][col].type = 'bomb';
       }
       break;
     case 'Escape': // Pause
@@ -74,8 +103,11 @@ document.addEventListener('keydown', (e) => {
 });
 
 document.addEventListener('keyup', (e) => {
+
+  // activeKey == e.code && (activeKey = null);
+
   switch (e.code) {
-    case 'KeyW': // Up
+    case 'KeyW': // Up      
       keys.w.pressed = false;
       player.idle = true;
       break;
@@ -139,8 +171,8 @@ function blowUpBomb(bomb) {
         row: row,
         col: col,
         position: {
-          x: col * cellSize,
-          y: row * cellSize
+          x: getPosition(col),
+          y: getPosition(row)
         },
         imageSrc: './images/bomb_edit.png',
         scale: 1,
@@ -153,8 +185,8 @@ function blowUpBomb(bomb) {
     if (row == player.row && col == player.col) {
       // console.log('same location with player');
       player.destruction = true;
-      playerDestruction.col = player.col;
-      playerDestruction.row = player.row;
+      playerDestruction.col = col;
+      playerDestruction.row = row;
       playerDestruction.position.x = player.position.x;
       playerDestruction.position.y = player.position.y;
       // console.log(playerDestruction, player.position.x, player.position.y);
@@ -193,8 +225,8 @@ function generateMazeLayout() {
           row: row, // i
           col: col, // j
           position: {
-            x: col * cellSize,
-            y: row * cellSize
+            x: getPosition(col),
+            y: getPosition(row)
           },
           imageSrc: './images/brick_wall.png',
           scale: 1,
@@ -262,8 +294,8 @@ function main(timestamp) {
   switch (true) {
     case keys.w.pressed:
       let mazePositionUp = [Math.round((player.position.y - .525 * cellSize) / cellSize), Math.round(player.position.x / cellSize)];
-      // console.log(`Up | position: [${mazePositionUp[0]}, ${mazePositionUp[1]}] | [x(${player.position.x}), y(${player.position.y})] | ${mazePositionUp}`);
-      if (cells[mazePositionUp[0]][mazePositionUp[1]].type == 'brickWall' || cells[mazePositionUp[0]][mazePositionUp[1]].type == 'monolith') {
+      // console.log(`Up | position: [${mazePositionUp[0]}, ${mazePositionUp[1]}] | [x(${player.position.x}), y(${player.position.y})] | ${mazePositionUp} | ${cells[mazePositionUp[0]][mazePositionUp[1]].type}`);
+      if (cells[mazePositionUp[0]][mazePositionUp[1]].type == 'brickWall' || cells[mazePositionUp[0]][mazePositionUp[1]].type == 'monolith' || cells[mazePositionUp[0]][mazePositionUp[1]].type == 'bomb') {
         keys.w.pressed = false;
         player.idle = true;
       }
@@ -276,7 +308,7 @@ function main(timestamp) {
     case keys.s.pressed:
       let mazePositionDown = [Math.round((player.position.y + .525 * cellSize) / cellSize), Math.round(player.position.x / cellSize)];
       // console.log(`Down | position: [${mazePositionDown[0]}, ${mazePositionDown[1]}] | [x(${player.position.x}), y(${player.position.y})] | ${mazePositionDown}`);
-      if (cells[mazePositionDown[0]][mazePositionDown[1]].type == 'brickWall' || cells[mazePositionDown[0]][mazePositionDown[1]].type == 'monolith') {
+      if (cells[mazePositionDown[0]][mazePositionDown[1]].type == 'brickWall' || cells[mazePositionDown[0]][mazePositionDown[1]].type == 'monolith' || cells[mazePositionDown[0]][mazePositionDown[1]].type == 'bomb') {
         keys.s.pressed = false;
         player.idle = true;
       }
@@ -289,7 +321,7 @@ function main(timestamp) {
     case keys.a.pressed:
       let mazePositionLeft = [Math.round(player.position.y / cellSize), Math.round((player.position.x - .55 * cellSize) / cellSize)];
       // console.log(`Left | position: [${mazePositionLeft[0]}, ${mazePositionLeft[1]}] | [x(${player.position.x}), y(${player.position.y})] | ${mazePositionLeft}`);
-      if (cells[mazePositionLeft[0]][mazePositionLeft[1]].type == 'brickWall' || cells[mazePositionLeft[0]][mazePositionLeft[1]].type == 'monolith') {
+      if (cells[mazePositionLeft[0]][mazePositionLeft[1]].type == 'brickWall' || cells[mazePositionLeft[0]][mazePositionLeft[1]].type == 'monolith' || cells[mazePositionLeft[0]][mazePositionLeft[1]].type == 'bomb') {
         keys.a.pressed = false;
         player.idle = true;
       }
@@ -302,7 +334,7 @@ function main(timestamp) {
     case keys.d.pressed:
       let mazePositionRight = [Math.round(player.position.y / cellSize), Math.round((player.position.x + .55 * cellSize) / cellSize)];
       // console.log(`Right | position: [${mazePositionRight[0]}, ${mazePositionRight[1]}] | [x(${player.position.x}), y(${player.position.y})] | ${mazePositionRight}`);
-      if (cells[mazePositionRight[0]][mazePositionRight[1]].type == 'brickWall' || cells[mazePositionRight[0]][mazePositionRight[1]].type == 'monolith') {
+      if (cells[mazePositionRight[0]][mazePositionRight[1]].type == 'brickWall' || cells[mazePositionRight[0]][mazePositionRight[1]].type == 'monolith' || cells[mazePositionRight[0]][mazePositionRight[1]].type == 'bomb') {
         keys.d.pressed = false;
         player.idle = true;
       }
@@ -325,8 +357,8 @@ function playerStartPosition() {
   player.row = getRandomNumber(1, 3);
   player.col = player.row < 2 ? getRandomNumber(1, 2) : 1;
   player.destruction = false;
-  player.position.x = player.col * cellSize + playerOffset.top;
-  player.position.y = player.row * cellSize + playerOffset.top;
+  player.position.x = getPosition(player.col) + playerOffset.top;
+  player.position.y = getPosition(player.row) + playerOffset.top;
   playerDestruction.framesCurrent = 0;
 }
 

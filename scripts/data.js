@@ -21,6 +21,8 @@
 //   ['▉', '▉', '▉', '▉', '▉', '▉', '▉', '▉', '▉', '▉', '▉', '▉', '▉', '▉', '▉']
 // ];
 
+let activeKey = null;
+
 const brickWallDestructionTimer = 500;
 let brickWallTimer = null;
 const bombOffset = {
@@ -244,3 +246,11 @@ const playerOffset = {
 };
 
 const playerSize = 62;
+
+function bombSetPosition(point) {
+  return Math.round(point / cellSize) * cellSize;
+}
+
+function getPosition(position) {
+  return position * cellSize;
+}
