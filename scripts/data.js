@@ -260,3 +260,7 @@ function bombSetPosition(point) {
 function getPosition(position) {
   return position * cellSize;
 }
+
+function getRandomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}

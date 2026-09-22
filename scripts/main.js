@@ -158,7 +158,9 @@ function blowUpBomb(bomb) {
       case 'brickWall':
         cell.idle = false;
         brickWallTimer = setTimeout(() => {
+          // if cell hides the bonus. we add it to the maze
           cells[row][col] = cell.bonus ? new Bonus({
+            bonus: 'explotionPower',
             row: row,
             col: col,
             position: {
@@ -172,10 +174,10 @@ function blowUpBomb(bomb) {
             spriteRowMax: 10,
             spritePositions: 1,
             spritePositionNumber: 0,
-            type: 'bonus'
-          }) : '';          
+            type: 'bonus'            
+          }) : '';
         }, brickWallDestructionTimer);
-
+        console.log(cells[row][col], bonus);
         break;
       // stop the explosion if it hit a wall
       case 'monolith':
@@ -259,10 +261,6 @@ function generateMazeLayout() {
       }
     }
   }
-}
-
-function getRandomNumber(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 function main(timestamp) {
