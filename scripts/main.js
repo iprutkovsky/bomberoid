@@ -26,10 +26,10 @@ document.addEventListener('keydown', (e) => {
       //   e.preventDefault();
       // }
       // else {
-        keys.w.pressed = true;
-        player.idle = false;
-        player.spritePositionNumber = 3;
-        console.log(player.idle, 'Up')
+      keys.w.pressed = true;
+      player.idle = false;
+      player.spritePositionNumber = 3;
+      console.log(player.idle, 'Up')
       // }
       break;
     case 'KeyS': // Down
@@ -37,10 +37,10 @@ document.addEventListener('keydown', (e) => {
       //   e.preventDefault();
       // }
       // else {
-        keys.s.pressed = true;
-        player.idle = false;
-        player.spritePositionNumber = 0;
-        console.log(player.idle, 'Down')
+      keys.s.pressed = true;
+      player.idle = false;
+      player.spritePositionNumber = 0;
+      console.log(player.idle, 'Down')
       // }
       break;
     case 'KeyA': // Left
@@ -48,10 +48,10 @@ document.addEventListener('keydown', (e) => {
       //   e.preventDefault();
       // }
       // else {
-        keys.a.pressed = true;
-        player.idle = false;
-        player.spritePositionNumber = 2;
-        console.log(player.idle, 'Left')
+      keys.a.pressed = true;
+      player.idle = false;
+      player.spritePositionNumber = 2;
+      console.log(player.idle, 'Left')
       // }
       break;
     case 'KeyD': // Right
@@ -59,10 +59,10 @@ document.addEventListener('keydown', (e) => {
       //   e.preventDefault();
       // }
       // else {
-        keys.d.pressed = true;
-        player.idle = false;
-        player.spritePositionNumber = 1;
-        console.log(player.idle, 'Right')
+      keys.d.pressed = true;
+      player.idle = false;
+      player.spritePositionNumber = 1;
+      console.log(player.idle, 'Right')
       // }
       break;
     case 'Space': // Set bomb
@@ -157,7 +157,25 @@ function blowUpBomb(bomb) {
       // run brick wall destruction
       case 'brickWall':
         cell.idle = false;
-        brickWallTimer = setTimeout(() => (cells[row][col] = ''), brickWallDestructionTimer);
+        brickWallTimer = setTimeout(() => {
+          cells[row][col] = cell.bonus ? new Bonus({
+            row: row,
+            col: col,
+            position: {
+              x: getPosition(col) + bonusOffSet.x,
+              y: getPosition(row) + bonusOffSet.y
+            },
+            imageSrc: './images/bonuses.png',
+            scale: .75,
+            framesMax: 10,
+            spriteRow: bonusType.explotionPower[1],
+            spriteRowMax: 10,
+            spritePositions: 1,
+            spritePositionNumber: 0,
+            type: 'bonus'
+          }) : '';          
+        }, brickWallDestructionTimer);
+
         break;
       // stop the explosion if it hit a wall
       case 'monolith':
@@ -235,6 +253,7 @@ function generateMazeLayout() {
           spriteRowMax: 1,
           spritePositions: 1,
           spritePositionNumber: 0,
+          bonus: true,
           type: 'brickWall'
         });
       }
@@ -264,6 +283,12 @@ function main(timestamp) {
   for (let row = 0; row < numberOfRows; row++) {
     for (let col = 0; col < numberOfColumns; col++) {
       switch (cells[row][col].type) {
+        case 'bonus':
+          cells[row][col].update();
+          if (player.row == row && player.col == col) {
+            cells[row][col] = '';
+          }
+          break;
         case 'brickWall':
           cells[row][col].update();
           break;

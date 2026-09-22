@@ -30,6 +30,11 @@ const bombOffset = {
   y: 8,
 };
 
+const bonusOffSet = {
+  x: 6,
+  y: 6,
+};
+
 // [value, spriteRow]
 const bonusType = {
   bombKicker: [false, 6],
@@ -57,7 +62,8 @@ let bonus = new Bonus({
   spriteRow: bonusType.destroyed[1],
   spriteRowMax: 10,
   spritePositions: 1,
-  spritePositionNumber: 0
+  spritePositionNumber: 0,
+  type: 'bonus'
 });
 
 const brickWall = new Monolith({

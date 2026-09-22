@@ -97,7 +97,6 @@ class Bonus extends Sprite {
   constructor({
     row,
     col,
-    touched = false,
     position,
     imageSrc,
     scale,
@@ -105,7 +104,8 @@ class Bonus extends Sprite {
     spriteRow,
     spriteRowMax,
     spritePositions,
-    spritePositionNumber
+    spritePositionNumber,
+    type
   }) {
     super({
       position,
@@ -119,18 +119,16 @@ class Bonus extends Sprite {
     });
     this.row = row;
     this.col = col;
-    this.touched = touched;
     this.position = position;
     this.framesCurrent = 0;
     this.framesElapsed = 0;
     this.framesHold = 15;
+    this.type = type;
   }
 
   update() {
-    if (this.touched) {
-      this.draw();
-      this.animateFrames();
-    }
+    this.draw();
+    this.animateFrames();
   };
 }
 
@@ -173,7 +171,7 @@ class Monolith extends Sprite {
   height = 64
   width = 64;
 
-  constructor({ row, col, idle = true, position, imageSrc, scale, framesMax, spriteRow, spriteRowMax, spritePositions, spritePositionNumber, type }) {
+  constructor({ row, col, idle = true, position, imageSrc, scale, framesMax, spriteRow, spriteRowMax, spritePositions, spritePositionNumber, bonus = false, type }) {
     super({
       position,
       imageSrc,
@@ -191,6 +189,7 @@ class Monolith extends Sprite {
     this.framesCurrent = 0;
     this.framesElapsed = 0;
     this.framesHold = 10;
+    this.bonus = bonus;
     this.type = type;
   }
 
@@ -307,7 +306,7 @@ class PlayerDestruction extends Sprite {
       this.framesCurrent++;
     }
 
-    if (this.framesCurrent == this.framesMax) {      
+    if (this.framesCurrent == this.framesMax) {
       playerStartPosition();
     }
   }
