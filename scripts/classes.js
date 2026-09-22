@@ -193,6 +193,13 @@ class Monolith extends Sprite {
     this.type = type;
   }
 
+  animateFrames() {
+    this.framesElapsed++;
+    if (!(this.framesElapsed % this.framesHold) && this.framesCurrent < this.framesMax - 1) {
+      this.framesCurrent++;
+    }
+  }
+
   update() {
     this.draw();
     this.animateFrames();

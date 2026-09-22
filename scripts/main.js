@@ -153,14 +153,26 @@ function blowUpBomb(bomb) {
 
     // console.log(`from directions: [${row}, ${col}], [${bomb.row}, ${bomb.col}]`);
 
+    // if something was touched by explosion
     switch (cell.type) {
+      // bomb hit another bomb so blow that one up too
+      case 'bomb':
+        // find the bomb that was hit by comparing positions
+        const nextBomb = entities.find((entity) =>
+          entity.type == 'bomb' && entity.row == row && entity.col == col
+        );
+        blowUpBomb(nextBomb);
+        break;
+      // removed bonus from maze
+      case 'bonus':
+        cells[row][col] = '';
+        break;
       // run brick wall destruction
       case 'brickWall':
         cell.idle = false;
         brickWallTimer = setTimeout(() => {
           // if cell hides the bonus. we add it to the maze
           cells[row][col] = cell.bonus ? new Bonus({
-            bonus: 'explotionPower',
             row: row,
             col: col,
             position: {
@@ -174,7 +186,7 @@ function blowUpBomb(bomb) {
             spriteRowMax: 10,
             spritePositions: 1,
             spritePositionNumber: 0,
-            type: 'bonus'            
+            type: 'bonus'
           }) : '';
         }, brickWallDestructionTimer);
         console.log(cells[row][col], bonus);
@@ -211,16 +223,7 @@ function blowUpBomb(bomb) {
       playerDestruction.position.y = player.position.y;
       // console.log(playerDestruction, player.position.x, player.position.y);
     }
-
-    // bomb hit another bomb so blow that one up too
-    if (cell.type == 'bomb') {
-      // find the bomb that was hit by comparing positions
-      const nextBomb = entities.find((entity) =>
-        entity.type == 'bomb' && entity.row == row && entity.col == col
-      );
-      blowUpBomb(nextBomb);
-    }
-
+    
     // stop the explosion if hit anything
     if (cell) {
       return;
@@ -255,9 +258,10 @@ function generateMazeLayout() {
           spriteRowMax: 1,
           spritePositions: 1,
           spritePositionNumber: 0,
-          bonus: true,
+          bonus: Math.random() < .15 ? true : false,
           type: 'brickWall'
         });
+        // console.log(Math.random(), 'get random');
       }
     }
   }
@@ -305,15 +309,14 @@ function main(timestamp) {
 
   // update player and player's status
   player.update();
-  if (player.destruction) {
-    playerDestruction.update();
-  }
-  // bonus.update();
+
+  // animation of player destruction
+  player.destruction && playerDestruction.update();
 
   player.movement.x = 0;
   player.movement.y = 0;
 
-  // player movement
+  // player movements / restrictions
   switch (true) {
     case keys.w.pressed:
       let mazePositionUp = [Math.round((player.position.y - .525 * cellSize) / cellSize), Math.round(player.position.x / cellSize)];
@@ -368,7 +371,6 @@ function main(timestamp) {
       }
       break;
   }
-
   // remove deprecated entities
   entities = entities.filter((entity) => entity.alive);
 }
