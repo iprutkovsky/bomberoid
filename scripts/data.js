@@ -25,6 +25,7 @@ let activeKey = null;
 
 const brickWallDestructionTimer = 500;
 let brickWallTimer = null;
+let activatedBombQuantity = 0;
 const bombOffset = {
   x: 8,
   y: 8,

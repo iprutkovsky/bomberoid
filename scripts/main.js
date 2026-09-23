@@ -29,7 +29,7 @@ document.addEventListener('keydown', (e) => {
       keys.w.pressed = true;
       player.idle = false;
       player.spritePositionNumber = 3;
-      console.log(player.idle, 'Up')
+      // console.log(player.idle, 'Up')
       // }
       break;
     case 'KeyS': // Down
@@ -40,7 +40,7 @@ document.addEventListener('keydown', (e) => {
       keys.s.pressed = true;
       player.idle = false;
       player.spritePositionNumber = 0;
-      console.log(player.idle, 'Down')
+      // console.log(player.idle, 'Down')
       // }
       break;
     case 'KeyA': // Left
@@ -51,7 +51,7 @@ document.addEventListener('keydown', (e) => {
       keys.a.pressed = true;
       player.idle = false;
       player.spritePositionNumber = 2;
-      console.log(player.idle, 'Left')
+      // console.log(player.idle, 'Left')
       // }
       break;
     case 'KeyD': // Right
@@ -62,37 +62,36 @@ document.addEventListener('keydown', (e) => {
       keys.d.pressed = true;
       player.idle = false;
       player.spritePositionNumber = 1;
-      console.log(player.idle, 'Right')
+      // console.log(player.idle, 'Right')
       // }
       break;
-    case 'Space': // Set bomb
-      if (!cells[row][col] && entities.filter((entity) => entity.type == 'bomb' && entity.owner == player).length < player.bombsQuantity) {
-        const bomb = new Bomb({
-          row: row,
-          col: col,
-          size: player.explosionPower,
-          owner: 'player',
-          position: {
-            x: getPosition(col) + bombOffset.x,
-            y: getPosition(row) + bombOffset.y
-          },
-          imageSrc: './images/bomb.png',
-          scale: .65,
-          framesMax: 4,
-          spriteRow: 0,
-          spriteRowMax: 8,
-          type: 'bomb'
-        });
-        cells[row][col] = bomb;
-        entities.push(bomb);
-      }
+    case 'Space': // Set bomb      
+      // if (activatedBombQuantity < config.bombsQuantity) {
+        if (!cells[row][col] && entities.filter((entity) => entity.type == 'bomb' && entity.owner == player).length < player.bombsQuantity) {
+          const bomb = new Bomb({
+            row: row,
+            col: col,
+            size: player.explosionPower,
+            owner: 'player',
+            position: {
+              x: getPosition(col) + bombOffset.x,
+              y: getPosition(row) + bombOffset.y
+            },
+            imageSrc: './images/bomb.png',
+            scale: .65,
+            framesMax: 4,
+            spriteRow: 0,
+            spriteRowMax: 8,
+            type: 'bomb'
+          });
+          cells[row][col] = bomb;
+          entities.push(bomb);
+          activatedBombQuantity++;          
+        }
+      // }
       break;
     case 'Escape': // Pause
       cancelAnimationFrame(loop);
-      // btn.style.display = 'block';
-      // btn.innerHTML = language[selectedGameLanguage].pauseGame;
-      // game.paused = true;
-      // stopTimer();
       break;
   }
 
@@ -133,11 +132,10 @@ function blowUpBomb(bomb) {
   if (!bomb.alive) return;
 
   // console.log(bomb, 'bomb data')
-
   bomb.alive = false;
+  activatedBombQuantity--;
 
-  // remove bomb from the field
-  cells[bomb.row][bomb.col] = '';
+  // cells[bomb.row][bomb.col] = '';
   clearTimeout(brickWallTimer);
 
   //    0,    1,  2,    3,    4
@@ -151,7 +149,7 @@ function blowUpBomb(bomb) {
     const col = bomb.col + dir[1];
     const cell = cells[row][col];
 
-    // console.log(`from directions: [${row}, ${col}], [${bomb.row}, ${bomb.col}]`);
+    console.log(`from directions: [${row}, ${col}] | [${bomb.row}, ${bomb.col}] | ${cells[row][col].type} |`);
 
     // if something was touched by explosion
     switch (cell.type) {
@@ -162,8 +160,10 @@ function blowUpBomb(bomb) {
           entity.type == 'bomb' && entity.row == row && entity.col == col
         );
         blowUpBomb(nextBomb);
+        // remove bomb from the field
+        cells[row][col] = '';
         break;
-      // removed bonus from maze
+      // if it hits bonus. Remove it from maze
       case 'bonus':
         cells[row][col] = '';
         break;
@@ -215,18 +215,15 @@ function blowUpBomb(bomb) {
     );
 
     if (row == player.row && col == player.col) {
-      // console.log('same location with player');
       player.destruction = true;
       playerDestruction.col = col;
       playerDestruction.row = row;
       playerDestruction.position.x = player.position.x;
       playerDestruction.position.y = player.position.y;
-      // console.log(playerDestruction, player.position.x, player.position.y);
     }
-    
-    // stop the explosion if hit anything
-    if (cell) {
-      return;
+
+    if (i == directions.length - 1) {
+      console.log('=====');
     }
   });
 }
@@ -258,10 +255,10 @@ function generateMazeLayout() {
           spriteRowMax: 1,
           spritePositions: 1,
           spritePositionNumber: 0,
+          // % of chance brickWall will contain a bonus
           bonus: Math.random() < .15 ? true : false,
           type: 'brickWall'
         });
-        // console.log(Math.random(), 'get random');
       }
     }
   }
@@ -321,7 +318,8 @@ function main(timestamp) {
     case keys.w.pressed:
       let mazePositionUp = [Math.round((player.position.y - .525 * cellSize) / cellSize), Math.round(player.position.x / cellSize)];
       // console.log(`Up | position: [${mazePositionUp[0]}, ${mazePositionUp[1]}] | [x(${player.position.x}), y(${player.position.y})] | ${mazePositionUp} | ${cells[mazePositionUp[0]][mazePositionUp[1]].type}`);
-      if (cells[mazePositionUp[0]][mazePositionUp[1]].type == 'brickWall' || cells[mazePositionUp[0]][mazePositionUp[1]].type == 'monolith' || cells[mazePositionUp[0]][mazePositionUp[1]].type == 'bomb') {
+      // if (cells[mazePositionUp[0]][mazePositionUp[1]].type == 'brickWall' || cells[mazePositionUp[0]][mazePositionUp[1]].type == 'monolith' || cells[mazePositionUp[0]][mazePositionUp[1]].type == 'bomb') {
+      if (cells[mazePositionUp[0]][mazePositionUp[1]].type && cells[mazePositionUp[0]][mazePositionUp[1]].type != 'bonus') {
         keys.w.pressed = false;
         player.idle = true;
       }
@@ -334,7 +332,7 @@ function main(timestamp) {
     case keys.s.pressed:
       let mazePositionDown = [Math.round((player.position.y + .525 * cellSize) / cellSize), Math.round(player.position.x / cellSize)];
       // console.log(`Down | position: [${mazePositionDown[0]}, ${mazePositionDown[1]}] | [x(${player.position.x}), y(${player.position.y})] | ${mazePositionDown}`);
-      if (cells[mazePositionDown[0]][mazePositionDown[1]].type == 'brickWall' || cells[mazePositionDown[0]][mazePositionDown[1]].type == 'monolith' || cells[mazePositionDown[0]][mazePositionDown[1]].type == 'bomb') {
+      if (cells[mazePositionDown[0]][mazePositionDown[1]].type && cells[mazePositionDown[0]][mazePositionDown[1]].type != 'bonus') {
         keys.s.pressed = false;
         player.idle = true;
       }
@@ -347,7 +345,7 @@ function main(timestamp) {
     case keys.a.pressed:
       let mazePositionLeft = [Math.round(player.position.y / cellSize), Math.round((player.position.x - .55 * cellSize) / cellSize)];
       // console.log(`Left | position: [${mazePositionLeft[0]}, ${mazePositionLeft[1]}] | [x(${player.position.x}), y(${player.position.y})] | ${mazePositionLeft}`);
-      if (cells[mazePositionLeft[0]][mazePositionLeft[1]].type == 'brickWall' || cells[mazePositionLeft[0]][mazePositionLeft[1]].type == 'monolith' || cells[mazePositionLeft[0]][mazePositionLeft[1]].type == 'bomb') {
+      if (cells[mazePositionLeft[0]][mazePositionLeft[1]].type && cells[mazePositionLeft[0]][mazePositionLeft[1]].type != 'bonus') {
         keys.a.pressed = false;
         player.idle = true;
       }
@@ -360,7 +358,7 @@ function main(timestamp) {
     case keys.d.pressed:
       let mazePositionRight = [Math.round(player.position.y / cellSize), Math.round((player.position.x + .55 * cellSize) / cellSize)];
       // console.log(`Right | position: [${mazePositionRight[0]}, ${mazePositionRight[1]}] | [x(${player.position.x}), y(${player.position.y})] | ${mazePositionRight}`);
-      if (cells[mazePositionRight[0]][mazePositionRight[1]].type == 'brickWall' || cells[mazePositionRight[0]][mazePositionRight[1]].type == 'monolith' || cells[mazePositionRight[0]][mazePositionRight[1]].type == 'bomb') {
+      if (cells[mazePositionRight[0]][mazePositionRight[1]].type && cells[mazePositionRight[0]][mazePositionRight[1]].type != 'bonus') {
         keys.d.pressed = false;
         player.idle = true;
       }
